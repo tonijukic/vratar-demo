@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Papež&amp;Ferko imperij - prototip (kratkoročno oddajanje)</title>
+<style>
+  :root{
+    --ink:#16203a; --mut:#64708a; --line:#e6e9f0; --bg:#f4f6fb; --card:#fff;
+    --ind:#1e2a4a; --blue:#1f5fe0; --blue-s:#e9f0fe; --teal:#0f9d8f;
+    --amber:#c98a1a; --amber-s:#fdf4e3; --green:#16936b; --green-s:#e5f5ee;
+    --red:#d14545; --red-s:#fdeceb; --purple:#6b4bd1;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  a{color:inherit}
+  .app{display:grid;grid-template-columns:232px 1fr;min-height:100vh}
+  /* sidebar */
+  .side{background:var(--ind);color:#cdd6ea;padding:18px 14px;position:sticky;top:0;height:100vh}
+  .brand{display:flex;align-items:center;gap:9px;color:#fff;font-weight:700;font-size:18px;padding:4px 8px 16px}
+  .brand .logo{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--blue),var(--teal));display:flex;align-items:center;justify-content:center;font-size:17px}
+  .nav{display:flex;flex-direction:column;gap:2px;margin-top:6px}
+  .nav button{all:unset;cursor:pointer;display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:9px;font-size:14px;color:#aab6d2;transition:.15s}
+  .nav button:hover{background:rgba(255,255,255,.06);color:#fff}
+  .nav button.on{background:var(--blue);color:#fff;font-weight:600}
+  .nav .ic{width:18px;text-align:center}
+  .side .foot{position:absolute;bottom:16px;left:14px;right:14px;font-size:11.5px;color:#7d8aae;line-height:1.4}
+  /* main */
+  .main{padding:26px 30px 70px;max-width:1180px}
+  .top{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:20px;flex-wrap:wrap}
+  h1{margin:0;font-size:23px;letter-spacing:-.3px}
+  .sub{color:var(--mut);font-size:14px;margin-top:3px}
+  .pill{display:inline-flex;align-items:center;gap:5px;border-radius:30px;padding:2px 10px;font-size:12px;font-weight:600}
+  .p-new{background:var(--blue-s);color:var(--blue)} .p-sent{background:var(--amber-s);color:var(--amber)}
+  .p-in{background:var(--green-s);color:var(--green)} .p-out{background:#eef1f6;color:var(--mut)}
+  .p-reg{background:var(--green-s);color:var(--green)} .p-noreg{background:var(--red-s);color:var(--red)}
+  .grid{display:grid;gap:14px}
+  .cards4{grid-template-columns:repeat(4,1fr)} .cards3{grid-template-columns:repeat(3,1fr)} .cards2{grid-template-columns:repeat(2,1fr)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;box-shadow:0 1px 2px rgba(20,32,60,.04)}
+  .stat .k{color:var(--mut);font-size:12.5px;text-transform:uppercase;letter-spacing:.4px}
+  .stat .v{font-size:26px;font-weight:700;margin-top:4px}
+  .stat .d{font-size:12.5px;color:var(--mut);margin-top:2px}
+  h2{font-size:15px;margin:26px 0 10px;text-transform:uppercase;letter-spacing:.5px;color:var(--mut)}
+  table{border-collapse:collapse;width:100%}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);font-size:13.5px;vertical-align:middle}
+  th{color:var(--mut);font-size:11.5px;text-transform:uppercase;letter-spacing:.4px;font-weight:600}
+  tr.row{cursor:pointer;transition:.1s} tr.row:hover{background:#f8faff}
+  .btn{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:6px;background:var(--blue);color:#fff;border-radius:9px;padding:8px 13px;font-size:13px;font-weight:600;transition:.15s}
+  .btn:hover{filter:brightness(1.07)}
+  .btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
+  .btn.wa{background:#25D366;color:#063}.btn.wa:hover{filter:brightness(1.04)}
+  .btn.sm{padding:5px 10px;font-size:12px;border-radius:8px}
+  .muted{color:var(--mut)} .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .code{font-family:ui-monospace,Menlo,monospace;background:var(--amber-s);color:var(--amber);border:1px solid #f0dcae;border-radius:7px;padding:2px 9px;font-weight:700;letter-spacing:1px}
+  .ap-ic{width:34px;height:34px;border-radius:9px;background:var(--blue-s);color:var(--blue);display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:13px}
+  .flag{font-size:16px;margin-right:5px}
+  /* drawer */
+  .ov{position:fixed;inset:0;background:rgba(16,24,44,.42);display:none;z-index:40}
+  .ov.open{display:block}
+  .drawer{position:fixed;top:0;right:0;width:min(560px,96vw);height:100vh;background:var(--bg);box-shadow:-8px 0 30px rgba(16,24,44,.2);transform:translateX(100%);transition:.25s;z-index:50;overflow-y:auto}
+  .drawer.open{transform:none}
+  .dr-head{background:var(--ind);color:#fff;padding:20px 22px;position:sticky;top:0;z-index:2}
+  .dr-head .x{float:right;cursor:pointer;opacity:.8;font-size:20px}
+  .dr-body{padding:20px 22px}
+  .kv{display:grid;grid-template-columns:120px 1fr;gap:7px 10px;font-size:13.5px;margin:10px 0}
+  .kv .kk{color:var(--mut)}
+  .timeline{border-left:2px solid var(--line);margin:10px 0 0 6px;padding-left:16px}
+  .tl{position:relative;padding:7px 0;font-size:13px}
+  .tl::before{content:"";position:absolute;left:-22px;top:11px;width:9px;height:9px;border-radius:50%;background:var(--blue)}
+  .tl.done::before{background:var(--green)} .tl.wait::before{background:var(--line)}
+  .seg{display:none} .seg.on{display:block}
+  .tabs{display:flex;gap:4px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:4px;width:fit-content;margin-bottom:14px}
+  .tabs button{all:unset;cursor:pointer;padding:6px 13px;border-radius:7px;font-size:13px;color:var(--mut)}
+  .tabs button.on{background:var(--blue);color:#fff;font-weight:600}
+  textarea,select,input{font:inherit}
+  textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 13px;resize:vertical;min-height:150px}
+  select,input.in{border:1px solid var(--line);border-radius:9px;padding:8px 11px;background:#fff}
+  .msg-prev{background:#dcf8c6;border-radius:12px;padding:12px 14px;font-size:13.5px;white-space:pre-wrap;line-height:1.5;box-shadow:0 1px 1px rgba(0,0,0,.07);position:relative}
+  .wa-wrap{background:#e5ddd5;border-radius:14px;padding:16px;background-image:linear-gradient(rgba(229,221,213,.6),rgba(229,221,213,.6))}
+  .chip{display:inline-block;background:#eef1f6;border-radius:7px;padding:3px 9px;font-size:12px;margin:2px 3px 2px 0}
+  .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:11px 18px;border-radius:10px;font-size:13.5px;opacity:0;transition:.25s;z-index:80}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .banner{background:var(--amber-s);border:1px solid #f0dcae;border-radius:12px;padding:12px 16px;font-size:13.5px;color:#7a5512;display:flex;gap:10px;align-items:flex-start}
+  .alert-dot{width:7px;height:7px;border-radius:50%;background:var(--red);display:inline-block;margin-right:6px}
+  @media(max-width:860px){.app{grid-template-columns:1fr}.side{position:static;height:auto}.cards4,.cards3{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand"><span class="logo">&#127963;</span> Papež&amp;Ferko imperij</div>
+    <nav class="nav" id="nav">
+      <button data-seg="dash" class="on"><span class="ic">&#9632;</span> Nadzorna plošča</button>
+      <button data-seg="res"><span class="ic">&#128197;</span> Rezervacije</button>
+      <button data-seg="msg"><span class="ic">&#128172;</span> Sporočila</button>
+      <button data-seg="ap"><span class="ic">&#127976;</span> Apartmaji</button>
+      <button data-seg="comp"><span class="ic">&#128737;</span> Prijava &amp; taksa</button>
+      <button data-seg="guest"><span class="ic">&#128100;</span> Pogled gosta</button>
+    </nav>
+    <div class="foot">Prototip &middot; demo podatki<br>Svetovanje &middot; NI F45<br>23 stanovanj &middot; Ljubljana</div>
+  </aside>
+
+  <main class="main">
+    <!-- DASHBOARD -->
+    <section class="seg on" id="seg-dash">
+      <div class="top"><div><h1>Nadzorna plošča</h1><div class="sub" id="dash-date"></div></div>
+        <button class="btn ghost" onclick="go('res')">Vse rezervacije &rarr;</button></div>
+      <div class="grid cards4" id="dash-stats"></div>
+      <div class="banner" id="dash-alert" style="margin-top:16px"></div>
+      <h2>Prihodi danes in jutri</h2>
+      <div class="card" style="padding:0"><table><thead><tr><th>Gost</th><th>Stanovanje</th><th>Prihod</th><th>Noči</th><th>Info</th><th>Prijava</th></tr></thead><tbody id="dash-arr"></tbody></table></div>
+      <h2>Odhodi danes</h2>
+      <div class="card" style="padding:0"><table><thead><tr><th>Gost</th><th>Stanovanje</th><th>Odhod</th><th>Čiščenje</th></tr></thead><tbody id="dash-dep"></tbody></table></div>
+    </section>
+
+    <!-- RESERVATIONS -->
+    <section class="seg" id="seg-res">
+      <div class="top"><div><h1>Rezervacije</h1><div class="sub">Booking.com &middot; vse padejo sem (zajem prek e-mailov / channel managerja)</div></div></div>
+      <div class="tabs" id="res-filter">
+        <button data-f="all" class="on">Vse</button><button data-f="nova">Nove</button>
+        <button data-f="info-poslan">Info poslan</button><button data-f="v-hisi">V hiši</button><button data-f="odjavljen">Odjavljeni</button>
+      </div>
+      <div class="card" style="padding:0"><table><thead><tr><th>Gost</th><th>Stanovanje</th><th>Prihod &rarr; Odhod</th><th>Gostje</th><th>Status</th><th></th></tr></thead><tbody id="res-tbody"></tbody></table></div>
+    </section>
+
+    <!-- MESSAGES -->
+    <section class="seg" id="seg-msg">
+      <div class="top"><div><h1>Sporočila &amp; predloge</h1><div class="sub">Predloge se samodejno izpolnijo s podatki rezervacije in stanovanja</div></div></div>
+      <div class="grid cards2" style="grid-template-columns:320px 1fr;align-items:start">
+        <div>
+          <div class="card">
+            <div class="muted" style="font-size:12px;text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">Avtomatizacija</div>
+            <div id="auto-rules"></div>
+          </div>
+          <div class="card" style="margin-top:14px">
+            <div class="muted" style="font-size:12px;text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">Predloge</div>
+            <div id="tpl-list"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px">
+            <label class="muted" style="font-size:13px">Rezervacija
+              <select class="in" id="msg-res" style="margin-left:6px"></select></label>
+            <label class="muted" style="font-size:13px">Jezik
+              <select class="in" id="msg-lang" style="margin-left:6px"><option value="sl">Slovensko</option><option value="en">English</option></select></label>
+          </div>
+          <div class="wa-wrap"><div class="msg-prev" id="msg-prev"></div></div>
+          <div style="display:flex;gap:9px;margin-top:14px;flex-wrap:wrap">
+            <button class="btn wa" id="msg-send">&#128241; Pošlji po WhatsApp</button>
+            <button class="btn ghost" id="msg-copy">Kopiraj besedilo</button>
+            <button class="btn ghost" id="msg-email">Pošlji po e-pošti</button>
+          </div>
+          <div class="muted" style="font-size:12px;margin-top:10px">Gumb odpre WhatsApp s predizpolnjenim sporočilom na gostovo številko (wa.me) - v produkciji lahko samodejno prek WhatsApp Cloud API.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- APARTMENTS -->
+    <section class="seg" id="seg-ap">
+      <div class="top"><div><h1>Apartmaji</h1><div class="sub" id="ap-count"></div></div></div>
+      <div class="grid cards3" id="ap-grid"></div>
+    </section>
+
+    <!-- COMPLIANCE -->
+    <section class="seg" id="seg-comp">
+      <div class="top"><div><h1>Prijava gostov &amp; turistična taksa</h1><div class="sub">eTurizem (AJPES) &middot; Ljubljana (MOL)</div></div></div>
+      <div class="grid cards3" id="comp-stats"></div>
+      <div class="banner" style="margin:16px 0"><span>&#9888;</span><div>Prijava gosta na policijo/eTurizem je obvezna <b>v 12 urah</b> po prihodu. Spodaj so prihodi, ki še niso prijavljeni - en klik odda prijavo (demo).</div></div>
+      <h2>Za prijavo</h2>
+      <div class="card" style="padding:0"><table><thead><tr><th>Gost</th><th>Država</th><th>Stanovanje</th><th>Prihod</th><th>Osebe</th><th>Taksa</th><th>Status</th><th></th></tr></thead><tbody id="comp-tbody"></tbody></table></div>
+    </section>
+
+    <!-- GUEST VIEW -->
+    <section class="seg" id="seg-guest">
+      <div class="top"><div><h1>Pogled gosta (self check-in)</h1><div class="sub">Povezava, ki jo gost dobi v sporočilu - vse na enem mestu</div></div>
+        <select class="in" id="guest-res"></select></div>
+      <div class="card" style="max-width:440px;margin:0 auto;padding:0;overflow:hidden">
+        <div style="background:linear-gradient(135deg,var(--blue),var(--teal));color:#fff;padding:22px">
+          <div style="font-size:13px;opacity:.85">Dobrodošli v Ljubljani</div>
+          <div id="g-ap" style="font-size:20px;font-weight:700;margin-top:3px"></div>
+          <div id="g-dates" style="font-size:13px;opacity:.9;margin-top:4px"></div>
+        </div>
+        <div style="padding:18px">
+          <div class="grid" style="gap:10px">
+            <div class="card" style="box-shadow:none"><div class="muted" style="font-size:12px">KODA ZA VSTOP</div><div id="g-code" style="margin-top:4px"></div></div>
+            <div class="card" style="box-shadow:none"><div class="muted" style="font-size:12px">NASLOV &amp; POT</div><div id="g-addr" style="margin-top:4px;font-size:13.5px"></div></div>
+            <div class="card" style="box-shadow:none"><div class="muted" style="font-size:12px">WIFI</div><div id="g-wifi" style="margin-top:4px;font-size:13.5px"></div></div>
+            <div class="card" style="box-shadow:none"><div class="muted" style="font-size:12px">CHECK-IN / CHECK-OUT</div><div id="g-times" style="margin-top:4px;font-size:13.5px"></div></div>
+          </div>
+          <div style="margin-top:14px"><div class="muted" style="font-size:12px;margin-bottom:6px">PRIPOROČAMO V BLIŽINI</div>
+            <span class="chip">&#9749; Kavarna 80m</span><span class="chip">&#127860; Restavracija 120m</span><span class="chip">&#128722; Trgovina 200m</span></div>
+          <button class="btn" style="width:100%;justify-content:center;margin-top:16px">&#128241; Potrebujem pomoč - piši gostitelju</button>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- drawer -->
+<div class="ov" id="ov" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------- DEMO PODATKI ---------- */
+const streets=["Trubarjeva 25","Stari trg 11","Gornji trg 7","Mestni trg 18","Čopova 14","Wolfova 8","Rimska 22","Slovenska 55","Miklošičeva 30","Nazorjeva 6","Cankarjevo n. 3","Trg republike 9","Gallusovo n. 15","Krekov trg 10","Poljanska 12","Zaloška 40","Dunajska 101","Celovška 85","Tržaška 28","Prešernov trg 4","Mesarska 5","Resljeva 20","Kersnikova 9"];
+const types=["Studio","2-sobno","1-sobno","Mansarda","Loft","Apartma Deluxe"];
+const apartments=streets.map((s,i)=>({
+  id:"A"+(i+1), name:s, type:types[i%types.length],
+  addr:s+", 1000 Ljubljana", code:String(1000+((i*137)%8999)).padStart(4,"0"),
+  wifi:"PapezFerko_"+(i+1), wifiPass:"dobrodosli"+(i+1),
+  floor:(i%4)+1, max:[2,4,2,3,4,5][i%6],
+  dir:"Vhod z ulice, "+((i%4)+1)+". nadstropje, stanovanje "+(i+1)+". Lockbox desno od vrat.",
+  park:i%3===0?"Javna garaža 150m (NUK/Kongresni)":"Modra cona, dovolilnica v stanovanju"
+}));
+const apById=Object.fromEntries(apartments.map(a=>[a.id,a]));
+
+const today=new Date(); today.setHours(0,0,0,0);
+const d=(off)=>{const x=new Date(today);x.setDate(x.getDate()+off);return x;};
+const iso=(dt)=>dt.toISOString().slice(0,10);
+const fmt=(dt)=>dt.toLocaleDateString("sl-SI",{day:"numeric",month:"short"});
+const flags={SI:"&#127480;&#127470;",IT:"&#127470;&#127481;",DE:"&#127465;&#127466;",AT:"&#127462;&#127481;",FR:"&#127467;&#127479;",NL:"&#127475;&#127473;",GB:"&#127468;&#127463;",US:"&#127482;&#127480;",ES:"&#127466;&#127480;",HR:"&#127469;&#127479;",PL:"&#127477;&#127473;"};
+const langByCountry={SI:"sl",HR:"sl",IT:"en",DE:"en",AT:"en",FR:"en",NL:"en",GB:"en",US:"en",ES:"en",PL:"en"};
+
+let rid=1000;
+function R(o){return Object.assign({id:"BK-"+(++rid),status:"nova",msgs:[],registered:false},o);}
+const reservations=[
+  R({guest:"Marco Rossi",country:"IT",ap:"A2",in:-1,nights:3,people:2,phone:"393501234567",email:"m.rossi@example.com",status:"v-hisi",registered:true,msgs:["confirm","prearrival","arrival"]}),
+  R({guest:"Anna Weber",country:"DE",ap:"A5",in:0,nights:2,people:2,phone:"4915112345678",email:"a.weber@example.com",status:"info-poslan",msgs:["confirm","prearrival"]}),
+  R({guest:"James Smith",country:"GB",ap:"A1",in:0,nights:4,people:3,phone:"447700900123",email:"j.smith@example.com",status:"info-poslan",msgs:["confirm","prearrival"]}),
+  R({guest:"Sophie Dubois",country:"FR",ap:"A9",in:1,nights:2,people:2,phone:"33612345678",email:"s.dubois@example.com",status:"nova",msgs:["confirm"]}),
+  R({guest:"Luka Horvat",country:"SI",ap:"A3",in:1,nights:1,people:1,phone:"38641234567",email:"luka.h@example.com",status:"nova",msgs:["confirm"]}),
+  R({guest:"Emma Johnson",country:"US",ap:"A12",in:2,nights:5,people:2,phone:"12025550147",email:"emma.j@example.com",status:"nova",msgs:[]}),
+  R({guest:"Jan Novák",country:"PL",ap:"A7",in:3,nights:3,people:4,phone:"48512345678",email:"jan.n@example.com",status:"nova",msgs:[]}),
+  R({guest:"Maria Garcia",country:"ES",ap:"A15",in:4,nights:2,people:2,phone:"34612345678",email:"m.garcia@example.com",status:"nova",msgs:[]}),
+  R({guest:"Tom de Vries",country:"NL",ap:"A4",in:5,nights:3,people:3,phone:"31612345678",email:"tom.dv@example.com",status:"nova",msgs:[]}),
+  R({guest:"Petra Kovač",country:"HR",ap:"A8",in:6,nights:2,people:2,phone:"385912345678",email:"petra.k@example.com",status:"nova",msgs:[]}),
+  R({guest:"Franz Huber",country:"AT",ap:"A6",in:-3,nights:2,people:2,phone:"4366412345678",email:"f.huber@example.com",status:"odjavljen",registered:true,msgs:["confirm","prearrival","arrival","checkout","review"]}),
+  R({guest:"Olivia Brown",country:"GB",ap:"A11",in:-2,nights:1,people:2,phone:"447700900456",email:"o.brown@example.com",status:"odjavljen",registered:true,msgs:["confirm","prearrival","arrival","checkout"]}),
+  R({guest:"Giulia Bianchi",country:"IT",ap:"A14",in:-1,nights:2,people:3,phone:"393401234567",email:"g.bianchi@example.com",status:"v-hisi",registered:false,msgs:["confirm","prearrival"]}),
+  R({guest:"David Müller",country:"DE",ap:"A10",in:7,nights:4,people:2,phone:"4915198765432",email:"d.mueller@example.com",status:"nova",msgs:[]}),
+].map(r=>{r.inDate=d(r.in);r.outDate=d(r.in+r.nights);r.price=r.nights*(60+(r.people*18));return r;});
+
+const TAX=3.13; // EUR/oseba/noč: turistična 2,50 + promocijska 0,63 (Ljubljana / MOL)
+
+/* ---------- PREDLOGE ---------- */
+const templates=[
+  {id:"confirm",name:"Potrditev rezervacije",when:"ob rezervaciji",sl:"Pozdravljeni {ime}!\nHvala za rezervacijo apartmaja {apartma} ({prihod}-{odhod}). Veselimo se vašega obiska v Ljubljani. Nekaj dni pred prihodom vam pošljem vse za vstop (naslov, koda, navodila).\nLep pozdrav, Vaš gostitelj",
+   en:"Hello {ime}!\nThanks for booking {apartma} ({prihod}-{odhod}). We look forward to your stay in Ljubljana. A few days before arrival I'll send you everything for check-in (address, code, directions).\nBest, your host"},
+  {id:"prearrival",name:"Pred prihodom (-2 dni)",when:"2 dni pred prihodom",sl:"Pozdravljeni {ime}, vaš prihod se bliža! 🏠\n\nNASLOV: {naslov}\nVSTOPNA KODA: {koda}\nNAVODILA: {navodila}\n\nCHECK-IN: po {checkin} | CHECK-OUT: do {checkout}\nWIFI: {wifi} / geslo: {wifiGeslo}\nPARKIRANJE: {parkiranje}\n\nZa karkoli sem na voljo. Srečno pot!",
+   en:"Hello {ime}, your arrival is near! 🏠\n\nADDRESS: {naslov}\nENTRY CODE: {koda}\nDIRECTIONS: {navodila}\n\nCHECK-IN: after {checkin} | CHECK-OUT: by {checkout}\nWIFI: {wifi} / pass: {wifiGeslo}\nPARKING: {parkiranje}\n\nI'm here for anything. Safe travels!"},
+  {id:"arrival",name:"Na dan prihoda",when:"zjutraj na dan prihoda",sl:"Dober dan {ime}! Danes vas pričakujemo v {apartma}. Vstopna koda je {koda}. Če karkoli potrebujete ob prihodu, mi pišite na WhatsApp. Lep dan!",
+   en:"Good day {ime}! We're expecting you today at {apartma}. Entry code is {koda}. If you need anything on arrival, message me on WhatsApp. Have a great day!"},
+  {id:"midstay",name:"Med bivanjem",when:"1. jutro bivanja",sl:"Pozdravljeni {ime}, upam, da ste se dobro namestili. Je vse v redu z apartmajem? Za priporočila (kava, hrana, znamenitosti) sem na voljo. Uživajte v Ljubljani!",
+   en:"Hi {ime}, I hope you settled in well. Is everything OK with the apartment? For recommendations (coffee, food, sights) just ask. Enjoy Ljubljana!"},
+  {id:"checkout",name:"Pred odhodom (-1 dan)",when:"dan pred odhodom",sl:"Pozdravljeni {ime}, jutri vas čaka odhod. CHECK-OUT je do {checkout}. Prosim, pustite ključ/kodo v lockboxu in zaprite okna. Hvala in srečno pot!",
+   en:"Hi {ime}, checkout is tomorrow by {checkout}. Please leave the key/code in the lockbox and close the windows. Thank you and safe travels!"},
+  {id:"review",name:"Po odhodu - ocena",when:"dan po odhodu",sl:"Pozdravljeni {ime}, hvala, ker ste bivali pri nas! Če vam je bilo všeč, bi nam zelo pomagala ocena na Booking.com. Vedno dobrodošli nazaj v Ljubljani! 🙏",
+   en:"Hi {ime}, thank you for staying with us! If you enjoyed it, a review on Booking.com would mean a lot. Always welcome back to Ljubljana! 🙏"},
+];
+const tplById=Object.fromEntries(templates.map(t=>[t.id,t]));
+
+/* merge polja */
+function merge(text,r,lang){
+  const a=apById[r.ap];
+  const map={ime:r.guest.split(" ")[0],apartma:a.name+" ("+a.type+")",naslov:a.addr,koda:a.code,
+    prihod:fmt(r.inDate),odhod:fmt(r.outDate),checkin:"15:00",checkout:"10:00",
+    wifi:a.wifi,wifiGeslo:a.wifiPass,navodila:a.dir,parkiranje:a.park};
+  return text.replace(/\{(\w+)\}/g,(m,k)=>map[k]!=null?map[k]:m);
+}
+
+/* ---------- STATUS HELPERS ---------- */
+const statusPill={"nova":["Nova","p-new"],"info-poslan":["Info poslan","p-sent"],"v-hisi":["V hiši","p-in"],"odjavljen":["Odjavljen","p-out"]};
+function pill(s){const[t,c]=statusPill[s];return `<span class="pill ${c}">${t}</span>`;}
+function apChip(id){const a=apById[id];return `<span class="ap-ic">${id.slice(1)}</span> ${a.name}`;}
+
+/* ---------- RENDER: DASHBOARD ---------- */
+function renderDash(){
+  document.getElementById("dash-date").textContent=today.toLocaleDateString("sl-SI",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+  const inHouse=reservations.filter(r=>r.status==="v-hisi").length;
+  const arrToday=reservations.filter(r=>iso(r.inDate)===iso(today));
+  const depToday=reservations.filter(r=>iso(r.outDate)===iso(today));
+  const next7=reservations.filter(r=>r.inDate>=today && r.inDate<d(7));
+  const occ=Math.round(inHouse/apartments.length*100);
+  const needReg=reservations.filter(r=>(r.status==="v-hisi")&&!r.registered).length;
+  const stats=[
+    ["Zasedenost",occ+"%",inHouse+" / "+apartments.length+" zasedenih"],
+    ["Prihodi danes",arrToday.length,"check-in"],
+    ["Odhodi danes",depToday.length,"čiščenje potrebno"],
+    ["Prihodi 7 dni",next7.length,"pripravi info"],
+  ];
+  document.getElementById("dash-stats").innerHTML=stats.map(s=>`<div class="card stat"><div class="k">${s[0]}</div><div class="v">${s[1]}</div><div class="d">${s[2]}</div></div>`).join("");
+  const al=document.getElementById("dash-alert");
+  const pend=reservations.filter(r=>r.inDate>=today&&r.inDate<d(3)&&!r.msgs.includes("prearrival")).length;
+  al.innerHTML=`<span>&#128276;</span><div><b>${pend}</b> prihodov v naslednjih 3 dneh še nima poslanih info/kod, <b>${needReg}</b> gostov v hiši še ni prijavljenih na eTurizem. <a href="#" onclick="go('msg');return false" style="color:#7a5512;font-weight:600">Uredi sporočila</a> &middot; <a href="#" onclick="go('comp');return false" style="color:#7a5512;font-weight:600">Prijavi goste</a></div>`;
+  const arr=reservations.filter(r=>r.inDate>=today&&r.inDate<d(2)).sort((a,b)=>a.inDate-b.inDate);
+  document.getElementById("dash-arr").innerHTML=arr.map(r=>`<tr class="row" onclick="openRes('${r.id}')"><td><span class="flag">${flags[r.country]}</span>${r.guest}</td><td>${apChip(r.ap)}</td><td>${fmt(r.inDate)}${iso(r.inDate)===iso(today)?' <b style="color:var(--blue)">danes</b>':''}</td><td>${r.nights}</td><td>${r.msgs.includes("prearrival")?'<span class="pill p-in">poslano</span>':'<span class="pill p-noreg">manjka</span>'}</td><td>${r.registered?'<span class="pill p-reg">prijavljen</span>':'<span class="pill p-noreg">ne</span>'}</td></tr>`).join("")||`<tr><td colspan=6 class="muted" style="padding:16px">Ni prihodov.</td></tr>`;
+  document.getElementById("dash-dep").innerHTML=depToday.map(r=>`<tr class="row" onclick="openRes('${r.id}')"><td><span class="flag">${flags[r.country]}</span>${r.guest}</td><td>${apChip(r.ap)}</td><td>do 10:00</td><td><span class="pill p-sent">naroči čiščenje</span></td></tr>`).join("")||`<tr><td colspan=4 class="muted" style="padding:16px">Ni odhodov danes.</td></tr>`;
+}
+
+/* ---------- RENDER: REZERVACIJE ---------- */
+let resFilter="all";
+function renderRes(){
+  const rows=reservations.filter(r=>resFilter==="all"||r.status===resFilter).sort((a,b)=>b.inDate-a.inDate);
+  document.getElementById("res-tbody").innerHTML=rows.map(r=>`<tr class="row" onclick="openRes('${r.id}')">
+    <td><span class="flag">${flags[r.country]}</span>${r.guest}<div class="muted mono" style="font-size:11px">${r.id}</div></td>
+    <td>${apChip(r.ap)}</td><td>${fmt(r.inDate)} &rarr; ${fmt(r.outDate)} <span class="muted">(${r.nights} n)</span></td>
+    <td>${r.people}</td><td>${pill(r.status)}</td><td><button class="btn sm" onclick="event.stopPropagation();go('msg');selMsgRes('${r.id}')">Sporočilo</button></td></tr>`).join("");
+}
+
+/* ---------- DRAWER: rezervacija ---------- */
+function openRes(id){
+  const r=reservations.find(x=>x.id===id),a=apById[r.ap];
+  const stages=[["confirm","Potrditev"],["prearrival","Pred prihodom + koda"],["arrival","Na dan prihoda"],["checkout","Pred odhodom"],["review","Prošnja za oceno"]];
+  const tl=stages.map(([k,lbl])=>{const done=r.msgs.includes(k);return `<div class="tl ${done?'done':'wait'}">${lbl} ${done?'<span class="muted">· poslano</span>':'<span class="muted">· čaka</span>'}</div>`}).join("");
+  document.getElementById("drawer").innerHTML=`
+    <div class="dr-head"><span class="x" onclick="closeDrawer()">&times;</span>
+      <div style="font-size:13px;opacity:.8">${r.id} &middot; Booking.com</div>
+      <div style="font-size:21px;font-weight:700;margin-top:2px"><span class="flag">${flags[r.country]}</span>${r.guest}</div>
+      <div style="opacity:.9;font-size:13.5px;margin-top:3px">${a.name} (${a.type}) &middot; ${fmt(r.inDate)} - ${fmt(r.outDate)}</div>
+      <div style="margin-top:10px">${pill(r.status)}</div></div>
+    <div class="dr-body">
+      <div class="kv">
+        <span class="kk">Prihod</span><span>${r.inDate.toLocaleDateString("sl-SI")} po 15:00</span>
+        <span class="kk">Odhod</span><span>${r.outDate.toLocaleDateString("sl-SI")} do 10:00 (${r.nights} noči)</span>
+        <span class="kk">Gostje</span><span>${r.people}</span>
+        <span class="kk">Vstopna koda</span><span><span class="code">${a.code}</span></span>
+        <span class="kk">Telefon</span><span class="mono">+${r.phone}</span>
+        <span class="kk">E-pošta</span><span class="mono">${r.email}</span>
+        <span class="kk">Znesek</span><span>${r.price} €</span>
+        <span class="kk">Taksa</span><span>${(r.people*r.nights*TAX).toFixed(2)} € (${r.people}×${r.nights}×${TAX.toFixed(2)})</span>
+        <span class="kk">eTurizem</span><span>${r.registered?'<span class="pill p-reg">prijavljen</span>':'<span class="pill p-noreg">ni prijavljen</span>'}</span>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin:14px 0">
+        <button class="btn wa" onclick="go('msg');selMsgRes('${r.id}');closeDrawer()">&#128241; Pošlji info + kodo</button>
+        ${!r.registered?`<button class="btn" onclick="registerGuest('${r.id}')">&#128737; Prijavi na eTurizem</button>`:''}
+        <button class="btn ghost" onclick="toast('Odprto v Booking.com (demo)')">Odpri v Booking.com</button>
+      </div>
+      <div class="muted" style="font-size:12px;text-transform:uppercase;letter-spacing:.4px;margin:16px 0 4px">Potek sporočil</div>
+      <div class="timeline">${tl}</div>
+    </div>`;
+  document.getElementById("ov").classList.add("open");
+  document.getElementById("drawer").classList.add("open");
+}
+function closeDrawer(){document.getElementById("ov").classList.remove("open");document.getElementById("drawer").classList.remove("open");}
+function registerGuest(id){const r=reservations.find(x=>x.id===id);r.registered=true;toast("Gost prijavljen na eTurizem (demo)");openRes(id);renderComp();renderDash();}
+
+/* ---------- RENDER: SPOROČILA ---------- */
+let msgTpl="prearrival";
+function renderMsgPanel(){
+  // auto rules
+  document.getElementById("auto-rules").innerHTML=[
+    ["ob rezervaciji","Potrditev","confirm"],["-2 dni","Info + koda","prearrival"],
+    ["dan prihoda 09:00","Dobrodošlica","arrival"],["dan odhoda -1","Navodila za odhod","checkout"],["+1 dan","Prošnja za oceno","review"]
+  ].map(x=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--line);font-size:13px"><span><b>${x[0]}</b> &middot; ${x[1]}</span><span class="pill p-in" style="font-size:11px">samodejno</span></div>`).join("");
+  // tpl list
+  document.getElementById("tpl-list").innerHTML=templates.map(t=>`<div onclick="msgTpl='${t.id}';renderMsgPanel()" style="cursor:pointer;padding:8px 10px;border-radius:9px;margin-bottom:3px;${t.id===msgTpl?'background:var(--blue-s)':''}"><div style="font-weight:600;font-size:13.5px;color:${t.id===msgTpl?'var(--blue)':'inherit'}">${t.name}</div><div class="muted" style="font-size:12px">${t.when}</div></div>`).join("");
+  // res select
+  const sel=document.getElementById("msg-res");
+  if(!sel.dataset.filled){sel.innerHTML=reservations.map(r=>`<option value="${r.id}">${r.guest} · ${apById[r.ap].name}</option>`).join("");sel.dataset.filled=1;}
+  renderPreview();
+}
+function renderPreview(){
+  const r=reservations.find(x=>x.id===document.getElementById("msg-res").value)||reservations[0];
+  const lang=document.getElementById("msg-lang").value;
+  const t=tplById[msgTpl];
+  document.getElementById("msg-prev").textContent=merge(t[lang],r,lang);
+}
+function selMsgRes(id){const sel=document.getElementById("msg-res");renderMsgPanel();sel.value=id;
+  // auto-guess language by country
+  const r=reservations.find(x=>x.id===id);document.getElementById("msg-lang").value=langByCountry[r.country]||"en";renderPreview();}
+function sendWA(){
+  const r=reservations.find(x=>x.id===document.getElementById("msg-res").value);
+  const lang=document.getElementById("msg-lang").value;const txt=merge(tplById[msgTpl][lang],r,lang);
+  window.open("https://wa.me/"+r.phone+"?text="+encodeURIComponent(txt),"_blank");
+  if(!r.msgs.includes(msgTpl))r.msgs.push(msgTpl);
+  if(r.status==="nova"&&msgTpl==="prearrival")r.status="info-poslan";
+  toast("WhatsApp odprt z besedilom za "+r.guest);renderRes();renderDash();
+}
+
+/* ---------- RENDER: APARTMAJI ---------- */
+function renderAp(){
+  document.getElementById("ap-count").textContent=apartments.length+" stanovanj v upravljanju";
+  document.getElementById("ap-grid").innerHTML=apartments.map(a=>`<div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center"><div style="font-weight:700">${a.name}</div><span class="ap-ic">${a.id.slice(1)}</span></div>
+    <div class="muted" style="font-size:13px">${a.type} &middot; ${a.floor}. nadstropje &middot; do ${a.max} oseb</div>
+    <div class="kv" style="grid-template-columns:90px 1fr;margin:11px 0 0">
+      <span class="kk">Koda</span><span><span class="code">${a.code}</span></span>
+      <span class="kk">WiFi</span><span class="mono" style="font-size:12px">${a.wifi} / ${a.wifiPass}</span>
+      <span class="kk">Parkir.</span><span style="font-size:12.5px">${a.park}</span>
+    </div></div>`).join("");
+}
+
+/* ---------- RENDER: SKLADNOST ---------- */
+function renderComp(){
+  const active=reservations.filter(r=>r.status==="v-hisi"||r.status==="info-poslan"||iso(r.inDate)>=iso(today));
+  const toReg=reservations.filter(r=>!r.registered&&(r.status==="v-hisi"||iso(r.inDate)<=iso(d(2))));
+  const monthRes=reservations.filter(r=>r.inDate.getMonth()===today.getMonth());
+  const taxSum=monthRes.reduce((s,r)=>s+r.people*r.nights*TAX,0);
+  const nights=monthRes.reduce((s,r)=>s+r.people*r.nights,0);
+  document.getElementById("comp-stats").innerHTML=[
+    ["Za prijavo",toReg.length,"rok: 12 ur po prihodu"],
+    ["Nočitve (mesec)",nights,"za poročilo eTurizem"],
+    ["Taksa (mesec)",taxSum.toFixed(2)+" €","rok: do 25. v mesecu"]
+  ].map(s=>`<div class="card stat"><div class="k">${s[0]}</div><div class="v">${s[1]}</div><div class="d">${s[2]}</div></div>`).join("");
+  document.getElementById("comp-tbody").innerHTML=reservations.filter(r=>iso(r.inDate)>=iso(d(-4))).sort((a,b)=>b.inDate-a.inDate).map(r=>`<tr>
+    <td><span class="flag">${flags[r.country]}</span>${r.guest}</td><td>${r.country}</td><td>${apById[r.ap].name}</td>
+    <td>${fmt(r.inDate)}</td><td>${r.people}</td><td>${(r.people*r.nights*TAX).toFixed(2)} €</td>
+    <td>${r.registered?'<span class="pill p-reg">prijavljen</span>':'<span class="pill p-noreg"><span class="alert-dot"></span>čaka</span>'}</td>
+    <td>${r.registered?'':`<button class="btn sm" onclick="registerGuest('${r.id}')">Prijavi</button>`}</td></tr>`).join("");
+}
+
+/* ---------- RENDER: GOST ---------- */
+function renderGuest(){
+  const sel=document.getElementById("guest-res");
+  if(!sel.dataset.filled){sel.innerHTML=reservations.map(r=>`<option value="${r.id}">${r.guest} · ${apById[r.ap].name}</option>`).join("");sel.dataset.filled=1;}
+  const r=reservations.find(x=>x.id===sel.value)||reservations[0],a=apById[r.ap];
+  document.getElementById("g-ap").textContent=a.name+" · "+a.type;
+  document.getElementById("g-dates").textContent=fmt(r.inDate)+" - "+fmt(r.outDate)+" · "+r.nights+" noči";
+  document.getElementById("g-code").innerHTML='<span class="code" style="font-size:18px">'+a.code+'</span>';
+  document.getElementById("g-addr").innerHTML=a.addr+'<br><span class="muted" style="font-size:12.5px">'+a.dir+'</span>';
+  document.getElementById("g-wifi").innerHTML=a.wifi+' <span class="muted">/</span> '+a.wifiPass;
+  document.getElementById("g-times").textContent="Check-in po 15:00 · Check-out do 10:00";
+}
+
+/* ---------- NAV ---------- */
+function go(seg){
+  document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("on",b.dataset.seg===seg));
+  document.querySelectorAll(".seg").forEach(s=>s.classList.toggle("on",s.id==="seg-"+seg));
+  ({dash:renderDash,res:renderRes,msg:renderMsgPanel,ap:renderAp,comp:renderComp,guest:renderGuest}[seg])();
+  window.scrollTo(0,0);
+}
+document.getElementById("nav").addEventListener("click",e=>{const b=e.target.closest("button");if(b)go(b.dataset.seg);});
+document.getElementById("res-filter").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;resFilter=b.dataset.f;document.querySelectorAll("#res-filter button").forEach(x=>x.classList.toggle("on",x===b));renderRes();});
+document.getElementById("msg-res").addEventListener("change",renderPreview);
+document.getElementById("msg-lang").addEventListener("change",renderPreview);
+document.getElementById("msg-send").addEventListener("click",sendWA);
+document.getElementById("msg-copy").addEventListener("click",()=>{navigator.clipboard.writeText(document.getElementById("msg-prev").textContent);toast("Besedilo kopirano");});
+document.getElementById("msg-email").addEventListener("click",()=>toast("Osnutek e-pošte pripravljen (demo)"));
+document.getElementById("guest-res").addEventListener("change",renderGuest);
+
+let tt;function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>t.classList.remove("show"),2600);}
+
+renderDash();
+</script>
+</body>
+</html>
